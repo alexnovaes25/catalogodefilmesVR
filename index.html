@@ -94,7 +94,7 @@
             const titulo = tituloInput.value.trim();
             if (!titulo) return;
 
-            const url = `https://www.omdbapi.com/?apikey=${API_KEY}&t=${encodeURIComponent(titulo)}`;
+         const url = `https://www.omdbapi.com/?apikey=${API_KEY}&t=${encodeURIComponent(titulo)}&lang=pt`;
 
             try {
                 const resposta = await fetch(url);
