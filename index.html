@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Filmes - Fase 2: Consumo de API</title>
-    
-    <link rel="stylesheet" href="style.css"> 
-
+    <title>Catálogo de Filmes</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -18,148 +16,122 @@
             <label for="titulo">Título do Filme:</label>
             <input type="text" id="titulo" required>
         </div>
-        
         <button type="submit">Buscar e Adicionar Filme</button>
     </form>
 
     <hr>
 
     <h2>Minha Lista de Filmes</h2>
-
     <div id="lista-filmes">
         <p>Nenhum filme cadastrado ainda.</p>
     </div>
 
-   <script>
-    const API_KEY = '72dcf75a'; 
+    <script>
+        const API_KEY = '72dcf75a';
+        let catalogo = JSON.parse(localStorage.getItem('catalogo')) || [];
 
-    // 1. CARREGAR O CATÁLOGO SALVO (ou criar vazio)
-    const catalogo = JSON.parse(localStorage.getItem('catalogoFilmes')) || [];
+        const form = document.getElementById('cadastro-filme');
+        const tituloInput = document.getElementById('titulo');
+        const listaFilmesContainer = document.getElementById('lista-filmes');
 
-    // 2. ELEMENTOS DO DOM
-    const form = document.getElementById('cadastro-filme');
-    const tituloInput = document.getElementById('titulo');
-    const listaFilmesContainer = document.getElementById('lista-filmes');
-
-    // ---------------------------------------------------------
-    // FUNÇÃO PARA SALVAR NO LOCALSTORAGE
-    // ---------------------------------------------------------
-    function salvarCatalogo() {
-        localStorage.setItem('catalogoFilmes', JSON.stringify(catalogo));
-    }
-
-    // ---------------------------------------------------------
-    // FUNÇÃO DE REMOÇÃO
-    // ---------------------------------------------------------
-    function removerFilme(indice, elementoDOM) {
-        catalogo.splice(indice, 1);
-        salvarCatalogo();
-        elementoDOM.remove();
-
-        if (catalogo.length === 0) {
-            listaFilmesContainer.innerHTML = '<p>Nenhum filme cadastrado ainda.</p>';
-        }
-    }
-
-    // ---------------------------------------------------------
-    // FUNÇÃO DE RENDERIZAÇÃO
-    // ---------------------------------------------------------
-    function renderizarFilme(filme, indice) {
-        if (catalogo.length === 1 && listaFilmesContainer.textContent.includes('Nenhum')) {
-            listaFilmesContainer.innerHTML = '';
+        // Salva no localStorage
+        function salvarCatalogo() {
+            localStorage.setItem('catalogo', JSON.stringify(catalogo));
         }
 
-        const filmeDiv = document.createElement('div');
-        filmeDiv.classList.add('filme-item'); 
-
-        const imagemPoster = document.createElement('img');
-        imagemPoster.src = filme.poster && filme.poster !== 'N/A' 
-                           ? filme.poster 
-                           : 'https://via.placeholder.com/100x150?text=Poster+Nao+Disponivel';
-        imagemPoster.alt = `Pôster do filme ${filme.titulo}`;
-        imagemPoster.classList.add('filme-poster');
-
-        const infoDiv = document.createElement('div');
-        infoDiv.classList.add('filme-info');
-        
-        const tituloH3 = document.createElement('h3');
-        tituloH3.textContent = filme.titulo;
-
-        const sinopseP = document.createElement('p');
-        sinopseP.textContent = filme.sinopse;
-
-        const removerBotao = document.createElement('button');
-        removerBotao.textContent = 'Remover';
-        removerBotao.classList.add('btn-remover');
-        
-        removerBotao.addEventListener('click', () => {
-            const indiceAtual = catalogo.findIndex(f => f.titulo === filme.titulo);
-            if (indiceAtual > -1) {
-                removerFilme(indiceAtual, filmeDiv);
+        function removerFilme(indice, elementoDOM) {
+            catalogo.splice(indice, 1);
+            salvarCatalogo();
+            elementoDOM.remove();
+            if (catalogo.length === 0) {
+                listaFilmesContainer.innerHTML = '<p>Nenhum filme cadastrado ainda.</p>';
             }
-        });
-        
-        infoDiv.appendChild(tituloH3);
-        infoDiv.appendChild(sinopseP);
-        infoDiv.appendChild(removerBotao);
+        }
 
-        filmeDiv.appendChild(imagemPoster);
-        filmeDiv.appendChild(infoDiv);
+        function renderizarFilme(filme, indice) {
+            if (catalogo.length === 1) listaFilmesContainer.innerHTML = '';
 
-        listaFilmesContainer.appendChild(filmeDiv);
-    }
+            const filmeDiv = document.createElement('div');
+            filmeDiv.classList.add('filme-item');
 
-    // ---------------------------------------------------------
-    // FUNÇÃO PRINCIPAL DE ADIÇÃO
-    // ---------------------------------------------------------
-    async function adicionarFilme(evento) {
-        evento.preventDefault(); 
+            const imagemPoster = document.createElement('img');
+            imagemPoster.src = filme.poster && filme.poster !== 'N/A'
+                ? filme.poster
+                : 'https://via.placeholder.com/100x150?text=Poster+Nao+Disponivel';
+            imagemPoster.alt = `Pôster do filme ${filme.titulo}`;
+            imagemPoster.classList.add('filme-poster');
 
-        const titulo = tituloInput.value.trim();
-        if (!titulo) return; 
-        
-        const tituloFormatado = encodeURIComponent(titulo);
-        const url = `https://www.omdbapi.com/?apikey=${API_KEY}&t=${tituloFormatado}`;
+            const infoDiv = document.createElement('div');
+            infoDiv.classList.add('filme-info');
 
-        try {
-            const resposta = await fetch(url);
-            const dadosDoFilme = await resposta.json();
-            
-            if (dadosDoFilme.Response === "True") {
-                const novoFilme = {
-                    titulo: dadosDoFilme.Title,      
-                    sinopse: dadosDoFilme.Plot,      
-                    poster: dadosDoFilme.Poster,     
-                };
+            const tituloH3 = document.createElement('h3');
+            tituloH3.textContent = filme.titulo;
 
-                catalogo.push(novoFilme);
-                salvarCatalogo();
-                renderizarFilme(novoFilme, catalogo.length - 1); 
-            } else {
-                alert(`Filme não encontrado na OMDb: "${titulo}".`);
+            const sinopseP = document.createElement('p');
+            sinopseP.textContent = filme.sinopse || 'Sinopse não disponível.';
+
+            const removerBotao = document.createElement('button');
+            removerBotao.textContent = 'Remover';
+            removerBotao.classList.add('btn-remover');
+
+            removerBotao.addEventListener('click', () => {
+                const indiceAtual = catalogo.findIndex(f => f.titulo === filme.titulo);
+                if (indiceAtual > -1) removerFilme(indiceAtual, filmeDiv);
+            });
+
+            infoDiv.appendChild(tituloH3);
+            infoDiv.appendChild(sinopseP);
+            infoDiv.appendChild(removerBotao);
+
+            filmeDiv.appendChild(imagemPoster);
+            filmeDiv.appendChild(infoDiv);
+
+            listaFilmesContainer.appendChild(filmeDiv);
+        }
+
+        async function adicionarFilme(evento) {
+            evento.preventDefault();
+            const titulo = tituloInput.value.trim();
+            if (!titulo) return;
+
+            const url = `https://www.omdbapi.com/?apikey=${API_KEY}&t=${encodeURIComponent(titulo)}`;
+
+            try {
+                const resposta = await fetch(url);
+                const dadosDoFilme = await resposta.json();
+
+                if (dadosDoFilme.Response === "True") {
+                    const novoFilme = {
+                        titulo: dadosDoFilme.Title,
+                        sinopse: dadosDoFilme.Plot,
+                        poster: dadosDoFilme.Poster
+                    };
+
+                    catalogo.push(novoFilme);
+                    salvarCatalogo();
+                    renderizarFilme(novoFilme, catalogo.length - 1);
+                } else {
+                    alert(`Filme não encontrado: "${titulo}".`);
+                }
+            } catch (erro) {
+                alert('Erro ao buscar o filme na API.');
+                console.error('Erro:', erro);
             }
 
-        } catch (error) {
-            alert('Ocorreu um erro ao tentar buscar o filme na API. Verifique sua chave.');
-            console.error('Erro de Fetch:', error);
+            form.reset();
         }
-        
-        form.reset(); 
-    }
 
-    // ---------------------------------------------------------
-    // CARREGAR FILMES SALVOS AO ABRIR A PÁGINA
-    // ---------------------------------------------------------
-    if (catalogo.length > 0) {
-        listaFilmesContainer.innerHTML = '';
-        catalogo.forEach(renderizarFilme);
-    }
+        // Recarregar lista ao abrir a página
+        function carregarCatalogo() {
+            if (catalogo.length > 0) {
+                listaFilmesContainer.innerHTML = '';
+                catalogo.forEach((filme, i) => renderizarFilme(filme, i));
+            }
+        }
 
-    // ---------------------------------------------------------
-    // EVENTO DO FORMULÁRIO
-    // ---------------------------------------------------------
-    form.addEventListener('submit', adicionarFilme);
-</script>
+        form.addEventListener('submit', adicionarFilme);
+        carregarCatalogo();
+    </script>
 
-    </body>
+</body>
 </html>
