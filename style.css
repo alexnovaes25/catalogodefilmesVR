@@ -44,7 +44,7 @@ button:hover {
 }
 
 /* ------------------------------------------------------------- */
-/* ESTILOS PARA A FASE 2: LISTA COM PÔSTER (Flexbox) */
+/* ESTILOS PARA A LISTA DE FILMES COM PÔSTER (Flexbox) */
 /* ------------------------------------------------------------- */
 
 /* Contêiner do Filme: Organiza imagem e texto */
@@ -88,11 +88,33 @@ button:hover {
     line-height: 1.4;
 }
 
+/* NOVO: Estilo para o Link/Botão do Trailer */
+.btn-trailer {
+    display: inline-block; 
+    padding: 8px 12px;
+    margin-right: 10px; 
+    margin-bottom: 10px;
+    background-color: #ff0000; /* Cor do YouTube */
+    color: white !important; /* Força a cor branca no texto do link */
+    text-decoration: none; 
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.2s; 
+    font-size: 0.8em; 
+}
+
+.btn-trailer:hover {
+    background-color: #cc0000;
+}
+
+
 /* Botão Remover */
 .filme-item .btn-remover {
     background-color: #dc3545;
     font-size: 0.8em;
     padding: 5px 10px;
+    /* Alinha com o botão de trailer se necessário */
+    margin-bottom: 10px; 
 }
 .filme-item .btn-remover:hover {
     background-color: #c82333;
