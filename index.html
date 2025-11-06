@@ -3,157 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Filmes</title>
-    <link rel="stylesheet" href="style.css">
+    <title>FILMFLIX - Catálogo de Filmes VR</title>
+    <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
 
-    <h1>Catálogo de Filmes</h1>
-    
-    <form id="cadastro-filme">
-        <h2>Adicionar Novo Filme (Busca por API)</h2>
-        <div>
-            <label for="titulo">Título do Filme:</label>
-            <input type="text" id="titulo" required>
+    <header class="header">
+        <div class="logo">► FILMFLIX</div>
+        <nav class="nav-menu">
+            <a href="#">Minha Lista</a>
+            <a href="#">Gêneros</a>
+            <a href="#">Sobre</a>
+            <button class="menu-toggle">☰</button>
+        </nav>
+    </header>
+
+    <section class="controls-section">
+        <div class="search-bar">
+            <input type="text" placeholder="Q Buscar Filmes..." class="search-input">
         </div>
-        <button type="submit">Buscar e Adicionar Filme</button>
-    </form>
+        
+        <select class="filter-dropdown" aria-label="Gênero">
+            <option value="">Gênero</option>
+            <option value="acao">Ação</option>
+            <option value="comedia">Comédia</option>
+            </select>
 
-    <hr>
+        <select class="filter-dropdown" aria-label="Ordenar por">
+            <option value="default">Ordenar</option>
+            <option value="recentes">Mais Recentes</option>
+            <option value="avaliacao">Melhor Avaliação</option>
+        </select>
+    </section>
 
-    <h2>Minha Lista de Filmes</h2>
-    <div id="lista-filmes">
-        <p>Nenhum filme cadastrado ainda.</p>
-    </div>
+    <main class="main-content">
+        <div class="lista-filmes">
+            <div class="card-filme">
+                <img src="[URL_DO_POSTER]" alt="Título Longo do Filme" class="poster-filme">
+                <span class="avaliacao">⭐ 7.4</span>
+                <div class="card-detalhes">
+                    <h3 class="titulo-filme">Título Longo do Filme (2025)</h3>
+                    <button class="botao-adicionar">+ Minha Lista</button>
+                </div>
+            </div>
+            
+            <div class="card-filme">
+                <img src="[URL_DO_POSTER]" alt="Outro Título" class="poster-filme">
+                <span class="avaliacao">⭐ 8.1</span>
+                <div class="card-detalhes">
+                    <h3 class="titulo-filme">Outro Título Incrível (2024)</h3>
+                    <button class="botao-adicionar">+ Minha Lista</button>
+                </div>
+            </div>
 
-    <script>
-        // Use sua chave da OMDB API aqui
-        const API_KEY = '72dcf75a'; 
-        let catalogo = JSON.parse(localStorage.getItem('catalogo')) || [];
+            </div>
+    </main>
 
-        const form = document.getElementById('cadastro-filme');
-        const tituloInput = document.getElementById('titulo');
-        const listaFilmesContainer = document.getElementById('lista-filmes');
-
-        // Salva no localStorage
-        function salvarCatalogo() {
-            localStorage.setItem('catalogo', JSON.stringify(catalogo));
-        }
-
-        function removerFilme(indice, elementoDOM) {
-            catalogo.splice(indice, 1);
-            salvarCatalogo();
-            elementoDOM.remove();
-            if (catalogo.length === 0) {
-                listaFilmesContainer.innerHTML = '<p>Nenhum filme cadastrado ainda.</p>';
-            }
-        }
-
-        function renderizarFilme(filme, indice) {
-            // Se for o primeiro item a ser adicionado, limpa a mensagem "Nenhum filme cadastrado"
-            if (catalogo.length === 1 && listaFilmesContainer.querySelector('p')) {
-                 listaFilmesContainer.innerHTML = '';
-            }
-
-            const filmeDiv = document.createElement('div');
-            filmeDiv.classList.add('filme-item');
-
-            const imagemPoster = document.createElement('img');
-            imagemPoster.src = filme.poster && filme.poster !== 'N/A'
-                ? filme.poster
-                : 'https://via.placeholder.com/100x150?text=Poster+Nao+Disponivel';
-            imagemPoster.alt = `Pôster do filme ${filme.titulo}`;
-            imagemPoster.classList.add('filme-poster');
-
-            const infoDiv = document.createElement('div');
-            infoDiv.classList.add('filme-info');
-
-            const tituloH3 = document.createElement('h3');
-            tituloH3.textContent = filme.titulo;
-
-            const sinopseP = document.createElement('p');
-            sinopseP.textContent = filme.sinopse || 'Sinopse não disponível.';
-
-            // NOVO: Link para o Trailer no YouTube
-            const trailerLink = document.createElement('a');
-            const termoBusca = encodeURIComponent(`${filme.titulo} trailer oficial`);
-            trailerLink.href = `https://www.youtube.com/results?search_query=${termoBusca}`;
-            trailerLink.target = '_blank';
-            trailerLink.textContent = '▶️ Ver Trailer (YouTube)';
-            trailerLink.classList.add('btn-trailer'); 
-
-            const removerBotao = document.createElement('button');
-            removerBotao.textContent = 'Remover';
-            removerBotao.classList.add('btn-remover');
-
-            removerBotao.addEventListener('click', () => {
-                // Usa findIndex para encontrar o item correto, evitando problemas de ordenação
-                const indiceAtual = catalogo.findIndex(f => f.titulo === filme.titulo); 
-                if (indiceAtual > -1) removerFilme(indiceAtual, filmeDiv);
-            });
-
-            infoDiv.appendChild(tituloH3);
-            infoDiv.appendChild(sinopseP);
-            infoDiv.appendChild(trailerLink); // Adiciona o link do trailer
-            infoDiv.appendChild(removerBotao);
-
-            filmeDiv.appendChild(imagemPoster);
-            filmeDiv.appendChild(infoDiv);
-
-            listaFilmesContainer.appendChild(filmeDiv);
-        }
-
-        async function adicionarFilme(evento) {
-            evento.preventDefault();
-            const titulo = tituloInput.value.trim();
-            if (!titulo) return;
-
-            // Busca na OMDB API
-            const url = `https://www.omdbapi.com/?apikey=${API_KEY}&t=${encodeURIComponent(titulo)}&lang=pt`;
-
-            try {
-                const resposta = await fetch(url);
-                const dadosDoFilme = await resposta.json();
-
-                if (dadosDoFilme.Response === "True") {
-                    // Verifica se o filme já existe (opcional, mas bom para evitar duplicatas)
-                    if (catalogo.some(f => f.titulo === dadosDoFilme.Title)) {
-                         alert(`O filme "${dadosDoFilme.Title}" já está no seu catálogo.`);
-                         form.reset();
-                         return;
-                    }
-
-                    const novoFilme = {
-                        titulo: dadosDoFilme.Title,
-                        sinopse: dadosDoFilme.Plot,
-                        poster: dadosDoFilme.Poster
-                    };
-
-                    catalogo.push(novoFilme);
-                    salvarCatalogo();
-                    renderizarFilme(novoFilme, catalogo.length - 1);
-                } else {
-                    alert(`Filme não encontrado: "${titulo}". Verifique o nome.`);
-                }
-            } catch (erro) {
-                alert('Erro ao buscar o filme na API. Verifique sua conexão ou chave de API.');
-                console.error('Erro:', erro);
-            }
-
-            form.reset();
-        }
-
-        // Recarregar lista ao abrir a página
-        function carregarCatalogo() {
-            if (catalogo.length > 0) {
-                listaFilmesContainer.innerHTML = '';
-                catalogo.forEach((filme, i) => renderizarFilme(filme, i));
-            }
-        }
-
-        form.addEventListener('submit', adicionarFilme);
-        carregarCatalogo();
-    </script>
-
-</body>
+    </body>
 </html>
