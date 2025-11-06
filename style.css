@@ -1,121 +1,196 @@
-body { 
-    font-family: Arial, sans-serif; 
-    padding: 20px; 
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: #f4f4f4; 
-}
-h1, h2 {
-    color: #333;
-}
-form {
-    background: #fff; 
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-}
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-input[type="text"] { 
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box; 
+/* --- 1. RESET BÁSICO E CONFIGURAÇÕES GLOBAIS --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Garante que padding e border não aumentem o tamanho do elemento */
 }
 
-button {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Fundo Escuro Principal */
+    color: #ffffff; /* Texto Claro */
+}
+
+a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* --- 2. HEADER E NAVEGAÇÃO --- */
+.header {
+    background-color: #1f1f1f;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky; /* Fixo no topo */
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #00e0b3; /* Cor de destaque (Verde-água) */
+}
+
+.nav-menu a {
+    margin-left: 20px;
+    font-size: 1em;
+    transition: color 0.2s;
+}
+
+.nav-menu a:hover {
+    color: #00e0b3;
+}
+
+.menu-toggle {
+    display: none; /* Escondido no desktop */
+    background: none;
     border: none;
-    border-radius: 4px;
+    color: #ffffff;
+    font-size: 1.5em;
     cursor: pointer;
-    transition: background-color 0.2s; 
-}
-button:hover {
-    background-color: #0056b3;
 }
 
-/* ------------------------------------------------------------- */
-/* ESTILOS PARA A LISTA DE FILMES COM PÔSTER (Flexbox) */
-/* ------------------------------------------------------------- */
+/* --- 3. CONTROLES (Busca e Filtros) --- */
+.controls-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    padding: 30px 20px;
+    background-color: #121212;
+    flex-wrap: wrap; /* Permite quebras de linha em telas pequenas */
+}
 
-/* Contêiner do Filme: Organiza imagem e texto */
-.filme-item { 
-    display: flex; /* Habilita o alinhamento lado a lado */
-    align-items: flex-start; /* Alinha o conteúdo ao topo */
+.search-bar {
+    flex-grow: 1;
+    max-width: 400px; /* Limita o tamanho da busca no desktop */
+}
+
+.search-input, .filter-dropdown {
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #444;
+    background-color: #2c2c2c;
+    color: #ffffff;
+    font-size: 1em;
+    width: 100%;
+}
+
+/* Estilo para a caixa de seleção */
+.filter-dropdown {
+    width: auto;
+    cursor: pointer;
+}
+
+
+/* --- 4. LISTA DE FILMES (O Layout Grid Responsivo) --- */
+.main-content {
+    padding: 20px;
+}
+
+.lista-filmes {
+    display: grid;
+    gap: 25px; /* Espaçamento entre os cards */
     
-    border: 1px solid #ddd; 
-    padding: 15px; 
-    margin-bottom: 20px; 
-    border-radius: 8px; 
-    background-color: #fff; 
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1); 
+    /* A MÁGICA DO RESPONSIVO: Ajuste automático de colunas */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    justify-content: center;
 }
 
-/* Estilo do Pôster */
-.filme-poster {
-    width: 100px; 
-    height: 150px; 
-    object-fit: cover; 
-    margin-right: 15px; /* Espaço entre o pôster e o texto */
-    border-radius: 4px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+/* --- 5. CARDS DE FILMES --- */
+.card-filme {
+    background-color: #1f1f1f;
+    border-radius: 10px;
+    overflow: hidden; /* Garante que o poster não saia da borda arredondada */
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
 }
 
-/* Estilo do Bloco de Informações */
-.filme-info {
-    flex-grow: 1; /* Ocupa o espaço restante */
+.card-filme:hover {
+    transform: translateY(-8px); /* Efeito de elevação sutil no hover */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
 }
 
-.filme-info h3 { 
-    margin-top: 0; 
-    color: #007bff;
-    font-size: 1.2em;
+.poster-filme {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 2/3; /* Proporção típica de pôsteres de cinema */
 }
 
-.filme-info p {
-    font-style: normal; 
-    color: #555;
-    margin-bottom: 15px;
-    line-height: 1.4;
-}
-
-/* NOVO: Estilo para o Link/Botão do Trailer */
-.btn-trailer {
-    display: inline-block; 
-    padding: 8px 12px;
-    margin-right: 10px; 
-    margin-bottom: 10px;
-    background-color: #ff0000; /* Cor do YouTube */
-    color: white !important; /* Força a cor branca no texto do link */
-    text-decoration: none; 
-    border-radius: 4px;
+.avaliacao {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 5px 8px;
+    border-radius: 5px;
+    font-size: 0.9em;
     font-weight: bold;
-    transition: background-color 0.2s; 
-    font-size: 0.8em; 
 }
 
-.btn-trailer:hover {
-    background-color: #cc0000;
+.card-detalhes {
+    padding: 15px;
+}
+
+.titulo-filme {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+    color: #f0f0f0;
+}
+
+.botao-adicionar {
+    background-color: #00e0b3; /* Cor de destaque */
+    color: #1f1f1f;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.botao-adicionar:hover {
+    background-color: #00c7a0;
 }
 
 
-/* Botão Remover */
-.filme-item .btn-remover {
-    background-color: #dc3545;
-    font-size: 0.8em;
-    padding: 5px 10px;
-    /* Alinha com o botão de trailer se necessário */
-    margin-bottom: 10px; 
-}
-.filme-item .btn-remover:hover {
-    background-color: #c82333;
+/* --- 6. RESPONSIVIDADE (Ajustes para Telas Menores/Celulares) --- */
+@media (max-width: 768px) {
+    
+    /* Header (Oculta links no mobile, mostra o botão do menu) */
+    .nav-menu a {
+        display: none; 
+    }
+    
+    .menu-toggle {
+        display: block; /* Mostra o ícone de menu hamburger */
+    }
+
+    /* Controles (Altera a ordem, a busca fica no topo) */
+    .controls-section {
+        flex-direction: column;
+        gap: 10px;
+        padding: 20px;
+    }
+
+    .search-bar {
+        width: 100%;
+        max-width: none;
+    }
+    
+    .filter-dropdown {
+        width: 100%;
+    }
+    
+    /* Lista de Filmes (Layout com menos colunas para telas menores) */
+    .lista-filmes {
+        /* No celular, a largura mínima para o card é maior, 
+           forçando 1 ou 2 colunas */
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
 }
